@@ -14,7 +14,7 @@
 
         /* Styles pour la pop-up */
         #myModal {
-            display: flex; /* Utilisation de flexbox pour le centrage */
+            display: flex;
             justify-content: center;
             align-items: center;
             position: fixed;
@@ -33,13 +33,13 @@
             border-radius: 1rem;
             max-width: 600px;
             text-align: center;
-            opacity: 1; /* Initialement visible */
+            opacity: 1;
             transition: opacity 0.5s ease-in-out;
         }
         
         /* Styles pour le conteneur du PDF */
         #pdf-container {
-            display: none; /* Initialement caché */
+            display: none;
             width: 100vw;
             height: 100vh;
             overflow-y: auto;
@@ -55,6 +55,27 @@
             display: block;
             margin: 0 auto 20px;
         }
+        
+        /* Style pour le bouton de téléchargement */
+        #download-btn {
+            display: none; /* Caché au début */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 1000;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #download-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -69,7 +90,9 @@
         </div>
     </div>
     
-    <div id="pdf-container"></div>
+    <div id="pdf-container">
+        <a id="download-btn" href="#" download>Télécharger le document</a>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script>
@@ -78,13 +101,12 @@
         };
 
         function closeModal() {
-            // Cacher la pop-up en douceur
             document.getElementById('myModal').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('myModal').style.display = 'none';
                 document.getElementById('pdf-container').style.display = 'block';
-                renderPdf(); // Lancer le rendu du PDF après que la pop-up soit cachée
-            }, 500); // Temps pour la transition d'opacité
+                renderPdf();
+            }, 500);
         }
 
         function renderPdf() {
@@ -112,6 +134,12 @@
                         });
                     });
                 }
+
+                // Affiche et met à jour le lien de téléchargement
+                const downloadButton = document.getElementById('download-btn');
+                downloadButton.href = pdfUrl;
+                downloadButton.style.display = 'block';
+
             }).catch(reason => {
                 console.error('Error during PDF rendering:', reason);
             });
