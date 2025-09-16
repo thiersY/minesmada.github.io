@@ -14,7 +14,7 @@
 
         /* Styles pour la pop-up */
         #myModal {
-            display: flex; /* Utilisation de flexbox pour le centrage */
+            display: flex;
             justify-content: center;
             align-items: center;
             position: fixed;
@@ -33,13 +33,13 @@
             border-radius: 1rem;
             max-width: 600px;
             text-align: center;
-            opacity: 1; /* Initialement visible */
+            opacity: 1;
             transition: opacity 0.5s ease-in-out;
         }
-        
+
         /* Styles pour le conteneur du PDF */
         #pdf-container {
-            display: none; /* Initialement caché */
+            display: none;
             width: 100vw;
             height: 100vh;
             overflow-y: auto;
@@ -49,11 +49,13 @@
             background-color: #f0f0f0;
         }
         
+        /* Assurez-vous que les canvas sont cliquables */
         .pdf-canvas {
             width: 100%;
             height: auto;
             display: block;
             margin: 0 auto 20px;
+            cursor: pointer; /* Indique à l'utilisateur que l'élément est cliquable */
         }
     </style>
 </head>
@@ -62,9 +64,7 @@
     <div id="myModal">
         <div class="modal-content">
             <div class="text-center">
-                <a href="https://thiersy.github.io/minesmada.github.io/documents/pv_de_controle.pdf" download="pv_de_controle.pdf">
-                    <img src="mdm.jpg" alt="img" width="20%" height="20%">
-                </a>
+                <img src="mdm.jpg" alt="img" width="20%" height="20%">
             </div>
             <p>Bonjour!</p>
             <p>Ce certificat de conformité est délivré par le Ministère des Mines.</p>
@@ -75,22 +75,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script>
+        const pdfUrl = 'https://thiersy.github.io/minesmada.github.io/documents/pv_de_controle.pdf';
+
         window.onload = function() {
             setTimeout(closeModal, 3500);
         };
 
         function closeModal() {
-            // Cacher la pop-up en douceur
             document.getElementById('myModal').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('myModal').style.display = 'none';
                 document.getElementById('pdf-container').style.display = 'block';
-                renderPdf(); // Lancer le rendu du PDF après que la pop-up soit cachée
-            }, 500); // Temps pour la transition d'opacité
+                renderPdf();
+            }, 500);
         }
 
         function renderPdf() {
-            const pdfUrl = 'https://thiersy.github.io/minesmada.github.io/documents/pv_de_controle.pdf';
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
@@ -99,7 +99,6 @@
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     pdf.getPage(pageNum).then(page => {
                         const viewport = page.getViewport({ scale: 1.0 });
-
                         const canvas = document.createElement('canvas');
                         canvas.className = 'pdf-canvas';
                         document.getElementById('pdf-container').appendChild(canvas);
@@ -112,10 +111,20 @@
                             canvasContext: context,
                             viewport: viewport
                         });
+
+                        // Rendre le canvas cliquable pour le téléchargement
+                        canvas.addEventListener('click', () => {
+                            const a = document.createElement('a');
+                            a.href = pdfUrl;
+                            a.download = 'pv_de_controle.pdf';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        });
                     });
                 }
             }).catch(reason => {
-                console.error('Error during PDF rendering:', reason);
+                console.error('Erreur lors du rendu du PDF :', reason);
             });
         }
     </script>
